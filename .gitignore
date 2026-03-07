@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.env
+*.db
+*.sqlite3
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+build/
+*.tsbuildinfo
+
+# Android
+frontend/android/.gradle/
+frontend/android/app/build/
+frontend/android/build/
+*.keystore
+!debug.keystore
+
+# iOS
+frontend/ios/Pods/
+frontend/ios/build/
+
+# Misc
+.DS_Store
+*.log
+.idea/
+.vscode/
