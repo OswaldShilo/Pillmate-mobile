@@ -138,6 +138,7 @@ export async function scheduleReminder(
           channelId,
           importance: AndroidImportance.HIGH,
           pressAction: { id: 'default' },
+          fullScreenAction: { id: 'default' },
           smallIcon: 'ic_launcher',
         },
       },

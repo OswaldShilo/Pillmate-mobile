@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PillMate Pitch Demo</title>
+    <style>
+        :root {
+            --emerald-50: #ECFDF5;
+            --emerald-100: #D1FAE5;
+            --emerald-300: #6EE7B7;
+            --emerald-500: #10B981;
+            --emerald-800: #065F46;
+            --emerald-900: #064E3B;
+            --slate-50: #F8FAFC;
+            --slate-100: #F1F5F9;
+            --slate-200: #E2E8F0;
+            --slate-300: #CBD5E1;
+            --slate-400: #94A3B8;
+            --slate-500: #64748B;
+            --slate-800: #1E293B;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--white);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: var(--slate-800);
+        }
+
+        /* ── Full Screen Layers ────────────────────────────────────────────── */
+
+        .layer {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* INTRO LAYER */
+        .intro-layer {
+            flex-direction: column;
+            background: var(--white);
+            z-index: 100;
+            animation: introSeq 5s forwards;
+            opacity: 1;
+            /* Starts visible */
+        }
+
+        .intro-logo {
+            width: 80px;
+            height: 80px;
+            background: var(--emerald-500);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.5s;
+        }
+
+        .intro-title {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--slate-800);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.8s;
+        }
+
+        .intro-subtitle {
+            font-size: 20px;
+            color: var(--slate-500);
+            margin-top: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards 1.1s;
+        }
+
+        /* MAIN DEMO LAYER */
+        .demo-layer {
+            z-index: 50;
+            background: var(--white);
+            animation: demoSeq 20s forwards;
+            animation-delay: 5s;
+            /* Starts after intro */
+        }
+
+        /* OUTRO LAYER */
+        .outro-layer {
+            flex-direction: column;
+            background: var(--white);
+            z-index: 100;
+            animation: fadeUp 1.5s forwards;
+            animation-delay: 25s;
+            /* Starts after demo */
+        }
+
+        .outro-title {
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--slate-800);
+            margin-bottom: 24px;
+        }
+
+        .outro-subtitle {
+            font-size: 24px;
+            color: var(--emerald-600);
+            font-weight: 600;
+        }
+
+
+        /* ── Main Demo Layout ────────────────────────────────────────────── */
+
+        .container {
+            display: flex;
+            align-items: center;
+            gap: 100px;
+            max-width: 1000px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .presentation {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hook-text {
+            font-size: 44px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s forwards 6s;
+            /* Enters 1s after demo starts */
+        }
+
+        .hook-text span {
+            color: var(--emerald-500);
+        }
+
+        .sub-text-container {
+            position: relative;
+            height: 140px;
+        }
+
+        .sub-text {
+            position: absolute;
+            font-size: 20px;
+            color: var(--slate-500);
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(10px);
+            width: 100%;
+        }
+
+        /* ── Phone UI Frame ──────────────────────────────────────────────── */
+        .phone-container {
+            position: relative;
+            width: 320px;
+            height: 650px;
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            animation: phoneIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards 5.5s;
+        }
+
+        .phone {
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border: 8px solid var(--slate-100);
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: var(--slate-100);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 100;
+        }
+
+        /* UI Scenes */
+        .ui-scene {
+            position: absolute;
+            inset: 0;
+            background: var(--white);
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Vault Scene */
+        .scene-vault {
+            padding: 60px 20px 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header h2 {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .add-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--emerald-800);
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(6, 95, 70, 0.2);
+        }
+
+        .card {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-100);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: #DBEAFE;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .c2 .card-icon {
+            background: #DCF4E8;
+        }
+
+        .card-body h3 {
+            font-size: 15px;
+            color: #1D4ED8;
+            margin-bottom: 4px;
+        }
+
+        .c2 .card-body h3 {
+            color: #059669;
+        }
+
+        .card-body p {
+            font-size: 12px;
+            color: var(--slate-500);
+        }
+
+        .tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--slate-600);
+        }
+
+        /* Bottom Sheet */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 60;
+            opacity: 0;
+        }
+
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 380px;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            z-index: 70;
+            transform: translateY(100%);
+            padding: 16px 24px;
+        }
+
+        .bs-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--slate-200);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .bs-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .input-box {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--slate-800);
+        }
+
+        .save-btn {
+            background: var(--emerald-800);
+            color: white;
+            text-align: center;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(6, 95, 70, 0.2);
+        }
+
+        /* Calendar Scene */
+        .scene-cal {
+            padding: 60px 20px 20px;
+        }
+
+        .cal-strip {
+            display: flex;
+            justify-content: space-between;
+            margin: 24px 0 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--slate-100);
+        }
+
+        .cal-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cal-day span:first-child {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--slate-400);
+        }
+
+        .cal-day span:last-child {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--slate-800);
+        }
+
+        .active-day span:last-child {
+            color: var(--emerald-800);
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--emerald-500);
+        }
+
+        .tl-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .tl-time {
+            width: 40px;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--slate-500);
+        }
+
+        .tl-time sub {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .tl-card {
+            flex: 1;
+            background: #FEF3C7;
+            border-left: 4px solid #D97706;
+            border-radius: 14px;
+            padding: 14px;
+            position: relative;
+        }
+
+        .tl-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #D97706;
+            margin-bottom: 4px;
+        }
+
+        .tl-sub {
+            font-size: 12px;
+            color: #D97706;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .take-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: #D97706;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        /* Cursor */
+        .cursor {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%231E293B" stroke="white" stroke-width="2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 1000;
+            opacity: 0;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        .nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: var(--white);
+            border-top: 1px solid var(--slate-100);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 50;
+        }
+
+        .nav-item {
+            font-size: 22px;
+            filter: grayscale(1) opacity(0.4);
+        }
+
+        .nav-active {
+            filter: none;
+        }
+
+
+        /* ── Advanced Orchestration & Animations ────────────────────────────── */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes introSeq {
+            0% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes demoSeq {
+            0% {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            5% {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            95% {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            100% {
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+
+        @keyframes phoneIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Subtitles Fading In/Out */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeInStay {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .st-1 {
+            animation: fadeInOut 6s forwards 6.5s;
+        }
+
+        .st-2 {
+            animation: fadeInOut 6s forwards 12.5s;
+        }
+
+        .st-3 {
+            animation: fadeInOut 6s forwards 18.5s;
+        }
+
+        /* UI Scenes Progression */
+        .scene-vault {
+            animation: appear 0.1s forwards 6.5s;
+        }
+
+        .c1 {
+            animation: fadeUp 0.5s forwards 7s;
+        }
+
+        .c2 {
+            animation: fadeUp 0.5s forwards 7.2s;
+        }
+
+        .overlay {
+            animation: stage2Overlay 6s forwards 11s;
+        }
+
+        .bottom-sheet {
+            animation: stage2Sheet 6s forwards 11s;
+        }
+
+        @keyframes stage2Overlay {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            10%,
+            90% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes stage2Sheet {
+
+            0%,
+            100% {
+                transform: translateY(100%);
+            }
+
+            10%,
+            90% {
+                transform: translateY(0);
+            }
+        }
+
+        .scene-cal {
+            animation: stage3Cal 7s forwards 17.5s;
+        }
+
+        @keyframes stage3Cal {
+            0% {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            10%,
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Typing & Interactions */
+        .type-effect {
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 1s steps(15) forwards 12s;
+        }
+
+        .type-effect-2 {
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing2 0.5s steps(5) forwards 13.5s;
+        }
+
+        @keyframes typing {
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes typing2 {
+            to {
+                width: 100%;
+            }
+        }
+
+        .btn-press {
+            transform-origin: center;
+            animation: bump 0.4s forwards 15.5s;
+        }
+
+        @keyframes bump {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.96);
+                background: var(--emerald-600);
+            }
+        }
+
+        .action-take {
+            animation: takePill 0.5s forwards 21s;
+        }
+
+        @keyframes takePill {
+            to {
+                background: #059669;
+                content: "✓ Taken";
+            }
+        }
+
+        /* Master Cursor */
+        .cursor {
+            animation: masterCursor 20s forwards 6.5s;
+        }
+
+        @keyframes masterCursor {
+            0% {
+                opacity: 0;
+                transform: translate(160px, 400px);
+            }
+
+            5% {
+                opacity: 1;
+                transform: translate(160px, 400px);
+            }
+
+            /* Move to Add (+) */
+            15% {
+                transform: translate(250px, 50px);
+            }
+
+            17% {
+                transform: translate(250px, 50px) scale(0.85);
+            }
+
+            19% {
+                transform: translate(250px, 50px) scale(1);
+            }
+
+            /* Watch Sheet opening and typing */
+            25% {
+                transform: translate(160px, 400px);
+            }
+
+            /* Click Save */
+            43% {
+                transform: translate(160px, 510px);
+            }
+
+            45% {
+                transform: translate(160px, 510px) scale(0.85);
+            }
+
+            47% {
+                transform: translate(160px, 510px) scale(1);
+            }
+
+            /* Click Calendar Tab */
+            53% {
+                transform: translate(160px, 600px);
+            }
+
+            55% {
+                transform: translate(160px, 600px) scale(0.85);
+            }
+
+            57% {
+                transform: translate(160px, 600px) scale(1);
+            }
+
+            /* Move to 'Take' Badge on Timeline */
+            70% {
+                transform: translate(260px, 220px);
+            }
+
+            72% {
+                transform: translate(260px, 220px) scale(0.85);
+            }
+
+            74% {
+                transform: translate(260px, 220px) scale(1);
+            }
+
+            /* Exit Scene */
+            85% {
+                opacity: 1;
+                transform: translate(350px, 400px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(350px, 400px);
+            }
+        }
+
+        @keyframes appear {
+            to {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. INTRO SCREEN (0s - 5s) -->
+    <div class="layer intro-layer">
+        <div class="intro-logo">💊</div>
+        <div class="intro-title">PillMate</div>
+        <div class="intro-subtitle">A simple, modern medication tracker.</div>
+    </div>
+
+    <!-- 2. MAIN DEMO SCREEN (5s - 25s) -->
+    <div class="layer demo-layer">
+        <div class="container">
+
+            <!-- Left: Presentation Text -->
+            <div class="presentation">
+                <h1 class="hook-text">Never miss a dose.<br><span>Effortlessly.</span></h1>
+
+                <div class="sub-text-container">
+                    <div class="sub-text st-1">
+                        <strong>1. The Ultimate Vault</strong><br>
+                        Store all your medications and doctor prescriptions in one unified, color-coded space.
+                    </div>
+
+                    <div class="sub-text st-2">
+                        <strong>2. Smart Frequency Engine</strong><br>
+                        Just tell us how many times a day. We calculate the timeline and sync native device alarms.
+                    </div>
+
+                    <div class="sub-text st-3">
+                        <strong>3. Beautiful Timeline</strong><br>
+                        Your day, visualized. Mark doses as taken instantly from an intuitive Google Calendar-style
+                        interface.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Animated Phone UI -->
+            <div class="phone-container">
+                <div class="phone">
+                    <div class="notch"></div>
+
+                    <!-- Scene A: Vault -->
+                    <div class="ui-scene scene-vault">
+                        <div class="header">
+                            <h2>Vault</h2>
+                            <div class="add-btn">+</div>
+                        </div>
+
+                        <div class="card c1">
+                            <div class="card-icon">💊</div>
+                            <div class="card-body">
+                                <h3>Paracetamol</h3>
+                                <p>500mg · 2x daily</p>
+                                <div class="tags">
+                                    <div class="tag">08:00 AM</div>
+                                    <div class="tag">08:00 PM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card c2">
+                            <div class="card-icon">🩺</div>
+                            <div class="card-body">
+                                <h3>Vitamin C</h3>
+                                <p>1000mg · 1x daily</p>
+                                <div class="tags">
+                                    <div class="tag">09:00 AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scene B: Drawer (Bottom Sheet) -->
+                    <div class="overlay"></div>
+                    <div class="bottom-sheet">
+                        <div class="bs-handle"></div>
+                        <div class="bs-title">Add Medication</div>
+
+                        <div class="input-group">
+                            <div class="label">Name *</div>
+                            <div class="input-box">
+                                <div class="type-effect">Amoxicillin</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="label">Frequency (per day)</div>
+                            <div class="input-box">
+                                <div class="type-effect-2">3</div>
+                            </div>
+                        </div>
+
+                        <div class="save-btn btn-press">Save & Set Alarms</div>
+                    </div>
+
+                    <!-- Scene C: Calendar View -->
+                    <div class="ui-scene scene-cal">
+                        <div class="header">
+                            <h2>March 2026</h2>
+                        </div>
+
+                        <div class="cal-strip">
+                            <div class="cal-day"><span>SUN</span><span>08</span>
+                                <div class="dot"></div>
+                            </div>
+                            <div class="cal-day active-day"><span>MON</span><span>09</span>
+                                <div class="dot"></div>
+                            </div>
+                            <div class="cal-day"><span>TUE</span><span>10</span></div>
+                            <div class="cal-day"><span>WED</span><span>11</span></div>
+                            <div class="cal-day"><span>THU</span><span>12</span></div>
+                        </div>
+
+                        <div class="timeline">
+                            <div class="tl-row">
+                                <div class="tl-time">08<br><sub>AM</sub></div>
+                                <div class="tl-card">
+                                    <div class="tl-title">Amoxicillin</div>
+                                    <div class="tl-sub">Dose 1 of 3</div>
+                                    <div class="take-badge" id="dyn-badge">Take</div>
+                                </div>
+                            </div>
+                            <div class="tl-row">
+                                <div class="tl-time">09<br><sub>AM</sub></div>
+                                <div class="tl-card" style="background:#DCF4E8; border-color:#059669">
+                                    <div class="tl-title" style="color:#059669">Vitamin C</div>
+                                    <div class="tl-sub" style="color:#059669">1000mg</div>
+                                    <div class="take-badge" style="background:#059669">✓ Taken</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navbar Bottom -->
+                    <div class="nav">
+                        <div class="nav-item">💊</div>
+                        <div class="nav-item">📅</div>
+                        <div class="nav-item">👤</div>
+                    </div>
+
+                    <div class="cursor"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. OUTRO SCREEN (25s - 27s+) -->
+    <div class="layer outro-layer">
+        <div class="intro-logo" style="margin-bottom: 30px; transform:translateY(0); opacity:1;">💊</div>
+        <div class="outro-title">PillMate</div>
+        <div class="outro-subtitle">Your health, simplified.</div>
+    </div>
+
+    <!-- Synchronization Script -->
+    <script>
+        // Simulate real JS actions based on the CSS keyframe timing
+
+        // At 18s (13s after demo layer start), the nav tab visually switches to calendar
+        setTimeout(() => {
+            const navs = document.querySelectorAll('.nav-item');
+            navs[0].classList.remove('nav-active');
+            navs[1].classList.add('nav-active');
+        }, 18000);
+
+        // At 21s (16s after demo layer starts), we mark the badge as taken
+        setTimeout(() => {
+            const b = document.getElementById('dyn-badge');
+            b.innerText = "✓ Taken";
+            b.style.background = "#059669";
+        }, 21000);
+    </script>
+</body>
+
+</html>

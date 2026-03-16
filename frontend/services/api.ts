@@ -4,9 +4,12 @@
 
 import { Platform } from 'react-native';
 
+// android: 'http://100.26.110.185:8000',
+//   default: 'http://100.26.110.185:8000',
+
 const API_BASE = Platform.select({
-  android: 'http://172.17.97.73:8080',
-  default: 'http://172.17.97.73:8080',
+  android: 'http://32.192.26.168:8080',
+  default: 'http://32.192.26.168:8080',
 });
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
